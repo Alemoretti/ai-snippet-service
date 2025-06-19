@@ -23,7 +23,8 @@ export default defineConfig([
     extends: [
       "plugin:@typescript-eslint/recommended",
       "plugin:@typescript-eslint/strict-type-checked",
-      "plugin:@typescript-eslint/stylistic-type-checked"
+      "plugin:@typescript-eslint/stylistic-type-checked",
+      "plugin:prettier/recommended"
     ],
     languageOptions: {
       parser: tseslint.parser,
@@ -31,8 +32,6 @@ export default defineConfig([
         project: "./tsconfig.json",
       },
     },
-    rules: {
-
-    },
+    rules: {},
   },
 ]);
