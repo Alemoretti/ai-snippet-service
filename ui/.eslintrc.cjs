@@ -26,4 +26,10 @@ module.exports = {
     'plugin:prettier/recommended',
   ],
   rules: {},
+  ignorePatterns: [
+    'postcss.config.js',
+    'tailwind.config.ts',
+    'vite.config.ts',
+    'vitest.config.ts',
+  ],
 };
