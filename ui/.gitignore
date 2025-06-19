@@ -1,14 +1,9 @@
 node_modules/
+build/
 dist/
 .env
 .env.*
 !.env.example
 coverage/
 *.tsbuildinfo
-
-node_modules
-
-# ui ignore list
-/.cache
-/build
-
+.cache/
