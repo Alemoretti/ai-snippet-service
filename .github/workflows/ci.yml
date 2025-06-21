@@ -20,6 +20,8 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm test
+      - name: Build API Docker image
+        run: docker build -t ai-snippet-api .
 
   ui:
     runs-on: ubuntu-latest
@@ -34,3 +36,5 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm test
+      - name: Build UI Docker image
+        run: docker build -t ai-snippet-ui .
