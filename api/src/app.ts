@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import express from 'express';
+import { connectDB } from './db.js';
 
 const app = express();
 
@@ -12,9 +13,11 @@ app.get('/health', (_req, res) => {
 export default app;
 
 if (process.argv[1] === new URL(import.meta.url).pathname) {
-  const port = process.env.PORT ?? 3000;
-  app.listen(port, () => {
-    // eslint-disable-next-line no-console
-    console.log(`API listening on port ${String(port)}`);
+  connectDB().then(() => {
+    const port = process.env.PORT ?? 3000;
+    app.listen(port, () => {
+      // eslint-disable-next-line no-console
+      console.log(`API listening on port ${String(port)}`);
+    });
   });
 }
