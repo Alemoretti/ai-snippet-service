@@ -6,7 +6,7 @@ export const meta: MetaFunction = () => {
     { title: 'AI Snippet Service' },
     {
       name: 'description',
-      content: 'Get summaries of your code snippets with AI',
+      content: 'Get summaries of your text with AI',
     },
   ];
 };
@@ -20,7 +20,7 @@ export default function Index() {
             AI Snippet Service
           </h1>
           <p className="text-xl text-gray-600 mb-8">
-            Get summaries of your code snippets with AI
+            Get summaries of your text with AI
           </p>
         </div>
 
