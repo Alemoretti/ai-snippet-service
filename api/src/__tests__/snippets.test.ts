@@ -26,19 +26,25 @@ interface ErrorResponse {
 let mongoServer: MongoMemoryServer | null = null;
 
 beforeAll(async () => {
+  // Use MongoDB Memory Server if available, otherwise use environment variable
   try {
-    // Start MongoDB Memory Server
     mongoServer = await MongoMemoryServer.create();
     const uri = mongoServer.getUri();
-
     await mongoose.connect(uri);
-    // Mock getSummary to avoid hitting OpenAI API
-    // (It was returning too many requests because of free account*)
-    vi.spyOn(summarize, 'getSummary').mockResolvedValue('mocked summary');
   } catch (error) {
-    console.error('Failed to start MongoDB Memory Server:', error);
-    throw error;
+    // Fallback to environment variable (for CI)
+    const uri = process.env.MONGODB_URI;
+    if (!uri) {
+      throw new Error(
+        'MONGODB_URI is not set and MongoDB Memory Server is not available',
+      );
+    }
+    await mongoose.connect(uri);
   }
+
+  // Mock getSummary to avoid hitting OpenAI API
+  // (It was returning too many requests because of free account*)
+  vi.spyOn(summarize, 'getSummary').mockResolvedValue('mocked summary');
 });
 
 afterEach(async () => {
@@ -53,6 +59,8 @@ afterEach(async () => {
 
 afterAll(async () => {
   await mongoose.disconnect();
+
+  // Clean up MongoDB Memory Server if it was used
   if (mongoServer) {
     await mongoServer.stop();
   }
