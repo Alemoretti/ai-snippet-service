@@ -27,7 +27,7 @@ app.post(
     res: Response,
   ): Promise<void> => {
     const { text } = req.body;
-    if (!text) {
+    if (!text?.trim()) {
       res.status(400).json({ error: 'Text is required' });
       return;
     }
