@@ -21,4 +21,9 @@ export default defineConfig({
     }),
     tsconfigPaths(),
   ],
+  server: {
+    proxy: {
+      '/api': 'http://localhost:3000',
+    },
+  },
 });
