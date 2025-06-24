@@ -54,6 +54,35 @@ app.post(
   },
 );
 
+app.get(
+  '/snippets/:id',
+  async (req: Request<{ id: string }>, res: Response): Promise<void> => {
+    const { id } = req.params;
+
+    try {
+      const snippet = await Snippet.findById(id);
+      if (!snippet) {
+        res.status(404).json({ error: 'Snippet not found' });
+        return;
+      }
+
+      res.status(200).json({
+        id: snippet._id,
+        text: snippet.text,
+        summary: snippet.summary,
+      });
+    } catch (err: unknown) {
+      // If the id is invalid, Mongoose will throw a CastError, which we treat as 404
+      res.status(404).json({ error: 'Not found' });
+    }
+  },
+);
+
+// Catch-all handler for unmatched routes
+app.use((_req, res) => {
+  res.status(404).json({ error: 'Not found' });
+});
+
 export default app;
 
 if (process.argv[1] === new URL(import.meta.url).pathname) {
