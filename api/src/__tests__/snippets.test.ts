@@ -222,4 +222,164 @@ describe('POST /snippets', () => {
       expect(summarize.getSummary).toHaveBeenCalledWith('Test text');
     });
   });
+
+  describe('security tests', () => {
+    it('should handle XSS attempts in input text', async () => {
+      const xssPayloads = [
+        '<script>alert("xss")</script>',
+        'javascript:alert("xss")',
+        '<img src="x" onerror="alert(\'xss\')">',
+        '"><script>alert("xss")</script>',
+        '"><img src=x onerror=alert("xss")>',
+      ];
+
+      for (const payload of xssPayloads) {
+        const res = await request(app)
+          .post('/snippets')
+          .send({ text: payload })
+          .expect(201);
+
+        const body = res.body as SnippetResponse;
+        expect(body).toHaveProperty('id');
+        expect(body).toHaveProperty('summary');
+
+        // Verify the AI service was called with the exact payload
+        expect(summarize.getSummary).toHaveBeenCalledWith(payload);
+
+        // The summary should be the mocked value, not the raw payload
+        expect(body.summary).toBe('mocked summary');
+      }
+    });
+
+    it('should handle SQL injection attempts', async () => {
+      const sqlInjectionPayloads = [
+        "'; DROP TABLE snippets; --",
+        "' OR '1'='1",
+        "'; INSERT INTO users VALUES ('hacker', 'password'); --",
+        "admin'--",
+        "1' UNION SELECT * FROM users--",
+      ];
+
+      for (const payload of sqlInjectionPayloads) {
+        const res = await request(app)
+          .post('/snippets')
+          .send({ text: payload })
+          .expect(201);
+
+        const body = res.body as SnippetResponse;
+        expect(body).toHaveProperty('id');
+        expect(body).toHaveProperty('summary');
+
+        // Verify the AI service was called with the exact payload
+        expect(summarize.getSummary).toHaveBeenCalledWith(payload);
+      }
+    });
+
+    it('should handle NoSQL injection attempts', async () => {
+      const nosqlInjectionPayloads = [
+        '{"$gt": ""}',
+        '{"$ne": null}',
+        '{"$where": "1==1"}',
+        '{"$regex": ".*"}',
+        '{"$exists": true}',
+      ];
+
+      for (const payload of nosqlInjectionPayloads) {
+        const res = await request(app)
+          .post('/snippets')
+          .send({ text: payload })
+          .expect(201);
+
+        const body = res.body as SnippetResponse;
+        expect(body).toHaveProperty('id');
+        expect(body).toHaveProperty('summary');
+
+        // Verify the AI service was called with the exact payload
+        expect(summarize.getSummary).toHaveBeenCalledWith(payload);
+      }
+    });
+
+    it('should handle command injection attempts', async () => {
+      const commandInjectionPayloads = [
+        '$(rm -rf /)',
+        '; rm -rf /',
+        '| rm -rf /',
+        '`rm -rf /`',
+        '$(cat /etc/passwd)',
+      ];
+
+      for (const payload of commandInjectionPayloads) {
+        const res = await request(app)
+          .post('/snippets')
+          .send({ text: payload })
+          .expect(201);
+
+        const body = res.body as SnippetResponse;
+        expect(body).toHaveProperty('id');
+        expect(body).toHaveProperty('summary');
+
+        // Verify the AI service was called with the exact payload
+        expect(summarize.getSummary).toHaveBeenCalledWith(payload);
+      }
+    });
+
+    it('should handle large payloads without crashing', async () => {
+      const largePayload = 'A'.repeat(10000); // 10KB payload
+
+      const res = await request(app)
+        .post('/snippets')
+        .send({ text: largePayload })
+        .expect(201);
+
+      const body = res.body as SnippetResponse;
+      expect(body).toHaveProperty('id');
+      expect(body).toHaveProperty('summary');
+      expect(summarize.getSummary).toHaveBeenCalledWith(largePayload);
+    });
+
+    it('should handle unicode and special characters safely', async () => {
+      const unicodePayloads = [
+        '🚀 Test with emoji',
+        'Test with unicode: 你好世界',
+        'Test with special chars: !@#$%^&*()_+-=[]{}|;:,.<>?',
+        'Test with quotes: "single" and \'double\'',
+        'Test with newlines:\n\r\t',
+        'Test with null bytes: \x00\x01\x02',
+      ];
+
+      for (const payload of unicodePayloads) {
+        const res = await request(app)
+          .post('/snippets')
+          .send({ text: payload })
+          .expect(201);
+
+        const body = res.body as SnippetResponse;
+        expect(body).toHaveProperty('id');
+        expect(body).toHaveProperty('summary');
+        expect(summarize.getSummary).toHaveBeenCalledWith(payload);
+      }
+    });
+
+    it('should not expose sensitive information in error responses', async () => {
+      // Mock the AI service to throw an error with potentially sensitive info
+      vi.spyOn(summarize, 'getSummary').mockRejectedValueOnce(
+        new Error(
+          'Database connection failed: mongodb://user:password@localhost:27017',
+        ),
+      );
+
+      const res = await request(app)
+        .post('/snippets')
+        .send({ text: 'Test text' })
+        .expect(500);
+
+      const body = res.body as ErrorResponse;
+      expect(body.error).toBe('Failed to generate summary.');
+
+      // Ensure the error message doesn't contain sensitive information
+      expect(body.error).not.toContain('mongodb://');
+      expect(body.error).not.toContain('password');
+      expect(body.error).not.toContain('localhost');
+    });
+  });
 });
