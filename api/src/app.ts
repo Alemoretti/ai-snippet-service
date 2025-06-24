@@ -77,6 +77,21 @@ app.get(
   },
 );
 
+app.get('/snippets', async (_req: Request, res: Response): Promise<void> => {
+  try {
+    const snippets = await Snippet.find({}).select('_id text summary').lean();
+    const formattedSnippets = snippets.map((snippet) => ({
+      id: snippet._id,
+      text: snippet.text,
+      summary: snippet.summary,
+    }));
+    res.status(200).json(formattedSnippets);
+  } catch (err: unknown) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to retrieve snippets.' });
+  }
+});
+
 // Catch-all handler for unmatched routes
 app.use((_req, res) => {
   res.status(404).json({ error: 'Not found' });

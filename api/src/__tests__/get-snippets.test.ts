@@ -99,7 +99,6 @@ describe('GET /snippets/:id', () => {
       'invalid-id',
       '123',
       'abc-def-ghi',
-      '',
       'null',
       'undefined',
       '507f1f77bcf86cd79943901', // 23 chars, invalid
@@ -108,8 +107,8 @@ describe('GET /snippets/:id', () => {
     const validButNonExistentId = '507f1f77bcf86cd799439012'; // 24 hex chars, valid format but not in DB
 
     for (const invalidId of invalidIds) {
-      const res = await request(app).get(`/snippets/${invalidId}`).expect(404);
-
+      const res = await request(app).get(`/snippets/${invalidId}`);
+      expect(res.status).toBe(404);
       const body = res.body as ErrorResponse;
       expect(body).toEqual({ error: 'Not found' });
     }
