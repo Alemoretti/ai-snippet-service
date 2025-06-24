@@ -23,7 +23,11 @@ app.post('/snippets', async (req, res) => {
     res.status(201).json({ id: snippet._id, summary: snippet.summary });
   } catch (err: any) {
     if (err?.status === 429 || err?.response?.status === 429) {
-      return res.status(503).json({ error: 'AI service rate limit reached. Please try again later.' });
+      return res
+        .status(503)
+        .json({
+          error: 'AI service rate limit reached. Please try again later.',
+        });
     }
     // Log the error for debugging
     console.error(err);
