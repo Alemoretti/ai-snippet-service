@@ -395,9 +395,7 @@ describe('GET /snippets/:id', () => {
     const { id } = createRes.body as SnippetResponse;
 
     // Then retrieve it
-    const getRes = await request(app)
-      .get(`/snippets/${id}`)
-      .expect(200);
+    const getRes = await request(app).get(`/snippets/${id}`).expect(200);
 
     const body = getRes.body as SnippetResponse & { text: string };
     expect(body).toHaveProperty('id', id);
@@ -407,10 +405,8 @@ describe('GET /snippets/:id', () => {
 
   it('should return 404 for non-existent snippet', async () => {
     const fakeId = '507f1f77bcf86cd799439011'; // Valid MongoDB ObjectId format
-    
-    const res = await request(app)
-      .get(`/snippets/${fakeId}`)
-      .expect(404);
+
+    const res = await request(app).get(`/snippets/${fakeId}`).expect(404);
 
     const body = res.body as ErrorResponse;
     expect(body).toEqual({ error: 'Snippet not found' });
@@ -430,9 +426,7 @@ describe('GET /snippets/:id', () => {
     const validButNonExistentId = '507f1f77bcf86cd799439011'; // 24 hex chars, valid format but not in DB
 
     for (const invalidId of invalidIds) {
-      const res = await request(app)
-        .get(`/snippets/${invalidId}`)
-        .expect(404);
+      const res = await request(app).get(`/snippets/${invalidId}`).expect(404);
 
       const body = res.body as ErrorResponse;
       expect(body).toEqual({ error: 'Not found' });
@@ -465,13 +459,9 @@ describe('GET /snippets/:id', () => {
     expect(id1).not.toBe(id2);
 
     // Retrieve each one
-    const get1 = await request(app)
-      .get(`/snippets/${id1}`)
-      .expect(200);
+    const get1 = await request(app).get(`/snippets/${id1}`).expect(200);
 
-    const get2 = await request(app)
-      .get(`/snippets/${id2}`)
-      .expect(200);
+    const get2 = await request(app).get(`/snippets/${id2}`).expect(200);
 
     const body1 = get1.body as SnippetResponse & { text: string };
     const body2 = get2.body as SnippetResponse & { text: string };
@@ -483,8 +473,9 @@ describe('GET /snippets/:id', () => {
   });
 
   it('should handle special characters in snippet text', async () => {
-    const specialText = 'Snippet with special chars: !@#$%^&*()_+-=[]{}|;:,.<>? 🚀 你好世界';
-    
+    const specialText =
+      'Snippet with special chars: !@#$%^&*()_+-=[]{}|;:,.<>? 🚀 你好世界';
+
     const createRes = await request(app)
       .post('/snippets')
       .send({ text: specialText })
@@ -492,9 +483,7 @@ describe('GET /snippets/:id', () => {
 
     const { id } = createRes.body as SnippetResponse;
 
-    const getRes = await request(app)
-      .get(`/snippets/${id}`)
-      .expect(200);
+    const getRes = await request(app).get(`/snippets/${id}`).expect(200);
 
     const body = getRes.body as SnippetResponse & { text: string };
     expect(body.text).toBe(specialText);
@@ -503,7 +492,7 @@ describe('GET /snippets/:id', () => {
 
   it('should handle very long snippet text', async () => {
     const longText = 'A'.repeat(1000);
-    
+
     const createRes = await request(app)
       .post('/snippets')
       .send({ text: longText })
@@ -511,9 +500,7 @@ describe('GET /snippets/:id', () => {
 
     const { id } = createRes.body as SnippetResponse;
 
-    const getRes = await request(app)
-      .get(`/snippets/${id}`)
-      .expect(200);
+    const getRes = await request(app).get(`/snippets/${id}`).expect(200);
 
     const body = getRes.body as SnippetResponse & { text: string };
     expect(body.text).toBe(longText);
