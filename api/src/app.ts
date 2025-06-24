@@ -72,7 +72,6 @@ app.get(
         summary: snippet.summary,
       });
     } catch (err: unknown) {
-      // If the id is invalid, Mongoose will throw a CastError, which we treat as 404
       res.status(404).json({ error: 'Not found' });
     }
   },
