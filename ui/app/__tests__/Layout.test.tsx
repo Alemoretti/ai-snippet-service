@@ -11,37 +11,49 @@ describe('Layout', () => {
     renderWithRouter(
       <Layout>
         <div data-testid="test-content">Test content</div>
-      </Layout>
+      </Layout>,
     );
-    
+
     const content = screen.getByTestId('test-content');
     expect(content).toBeDefined();
     expect(content.textContent).toBe('Test content');
   });
 
   it('should render header with logo', () => {
-    renderWithRouter(<Layout><div>Content</div></Layout>);
-    
+    renderWithRouter(
+      <Layout>
+        <div>Content</div>
+      </Layout>,
+    );
+
     const logo = screen.getByText('AI Snippet Service');
     expect(logo).toBeDefined();
   });
 
   it('should render navigation links', () => {
-    renderWithRouter(<Layout><div>Content</div></Layout>);
-    
+    renderWithRouter(
+      <Layout>
+        <div>Content</div>
+      </Layout>,
+    );
+
     const homeLink = screen.getByText('Home');
     const snippetsLink = screen.getByText('Snippets');
     const createLink = screen.getByText('Create');
-    
+
     expect(homeLink).toBeDefined();
     expect(snippetsLink).toBeDefined();
     expect(createLink).toBeDefined();
   });
 
   it('should render footer', () => {
-    renderWithRouter(<Layout><div>Content</div></Layout>);
-    
+    renderWithRouter(
+      <Layout>
+        <div>Content</div>
+      </Layout>,
+    );
+
     const footer = screen.getByText('AI Snippet Service - Powered by AI');
     expect(footer).toBeDefined();
   });
-}); 
+});

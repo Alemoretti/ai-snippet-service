@@ -13,8 +13,8 @@ export function Layout({ children }: LayoutProps) {
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <div className="flex items-center">
-              <Link 
-                to="/" 
+              <Link
+                to="/"
                 className="text-xl font-bold text-gray-900 hover:text-blue-600 transition-colors"
               >
                 AI Snippet Service
@@ -61,4 +61,4 @@ export function Layout({ children }: LayoutProps) {
       </footer>
     </div>
   );
-} 
+}
