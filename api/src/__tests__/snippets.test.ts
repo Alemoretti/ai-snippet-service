@@ -3,6 +3,7 @@ import request from 'supertest';
 import app from '../app.js';
 import mongoose from 'mongoose';
 import * as summarize from '../ai/openai/summarize.js';
+import { MongoMemoryServer } from 'mongodb-memory-server';
 import {
   describe,
   it,
@@ -22,9 +23,13 @@ interface ErrorResponse {
   error: string;
 }
 
+let mongoServer: MongoMemoryServer;
+
 beforeAll(async () => {
-  const uri = process.env.MONGODB_URI;
-  if (!uri) throw new Error('MONGODB_URI is not set');
+  // Start MongoDB Memory Server
+  mongoServer = await MongoMemoryServer.create();
+  const uri = mongoServer.getUri();
+
   await mongoose.connect(uri);
   // Mock getSummary to avoid hitting OpenAI API
   // (It was returning too many requests because of free account*)
@@ -42,8 +47,8 @@ afterEach(async () => {
 });
 
 afterAll(async () => {
-  await mongoose.connection.db?.dropDatabase();
   await mongoose.disconnect();
+  await mongoServer.stop();
 });
 
 describe('POST /snippets', () => {
