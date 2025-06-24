@@ -53,7 +53,7 @@ describe('Layout', () => {
       </Layout>,
     );
 
-    const footer = screen.getByText('AI Snippet Service - Powered by AI');
+    const footer = screen.getByText('Summary service powered by AI (OpenAI)');
     expect(footer).toBeDefined();
   });
 });
