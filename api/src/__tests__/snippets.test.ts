@@ -14,7 +14,9 @@ import {
 } from 'vitest';
 
 beforeAll(async () => {
-  await mongoose.connect(process.env.MONGODB_URI!);
+  const uri = process.env.MONGODB_URI;
+  if (!uri) throw new Error('MONGODB_URI is not set');
+  await mongoose.connect(uri);
   // Mock getSummary to avoid hitting OpenAI API
   // (It was returning too many requests because of free account*)
   vi.spyOn(summarize, 'getSummary').mockResolvedValue('mocked summary');
@@ -40,8 +42,7 @@ describe('POST /snippets', () => {
       .send({ text: 'This is a test snippet.' })
       .expect(201);
 
-    expect(res.body).toHaveProperty('id');
-    expect(res.body).toHaveProperty('summary');
-    expect(typeof res.body.summary).toBe('string');
+    const { summary } = res.body as { id: string; summary: string };
+    expect(typeof summary).toBe('string');
   });
 });
