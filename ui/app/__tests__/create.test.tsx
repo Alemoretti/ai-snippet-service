@@ -46,8 +46,7 @@ describe('Create Summary Form', () => {
       json: () => ({
         id: '123',
         title: 'Test Summary',
-        code: 'This is some text to summarize',
-        language: 'text',
+        text: 'This is some text to summarize',
         summary: 'A summary of the text',
         createdAt: new Date().toISOString(),
       }),
@@ -96,8 +95,7 @@ describe('Create Summary Form', () => {
       json: () => ({
         id: '123',
         title: 'Test Summary',
-        code: 'This is some text to summarize',
-        language: 'text',
+        text: 'This is some text to summarize',
         summary: 'A summary of the text',
         createdAt: new Date().toISOString(),
       }),
@@ -144,8 +142,7 @@ describe('Create Summary Form', () => {
       json: () => ({
         id: '123',
         title: 'Test Summary',
-        code: 'This is some text to summarize',
-        language: 'text',
+        text: 'This is some text to summarize',
         summary: 'A summary of the text',
         createdAt: new Date().toISOString(),
       }),
