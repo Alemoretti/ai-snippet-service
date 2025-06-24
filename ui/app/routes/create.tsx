@@ -3,21 +3,18 @@ import { Layout } from '~/components/Layout';
 
 interface FormData {
   title: string;
-  code: string;
-  language: string;
+  text: string;
 }
 
 interface FormErrors {
   title?: string;
-  code?: string;
-  language?: string;
+  text?: string;
 }
 
 export default function CreatePage() {
   const [formData, setFormData] = useState<FormData>({
     title: '',
-    code: '',
-    language: '',
+    text: '',
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [isLoading, setIsLoading] = useState(false);
@@ -30,11 +27,8 @@ export default function CreatePage() {
     if (!formData.title.trim()) {
       newErrors.title = 'Title is required';
     }
-    if (!formData.code.trim()) {
-      newErrors.code = 'Code is required';
-    }
-    if (!formData.language) {
-      newErrors.language = 'Language is required';
+    if (!formData.text.trim()) {
+      newErrors.text = 'Text is required';
     }
 
     setErrors(newErrors);
@@ -58,29 +52,31 @@ export default function CreatePage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          title: formData.title,
+          code: formData.text, // Keep 'code' field for API compatibility
+          language: 'text', // Default language for plain text
+        }),
       });
 
       if (response.ok) {
         await response.json();
-        setSuccessMessage('Snippet created successfully!');
+        setSuccessMessage('Text summarized successfully!');
         // Clear form
-        setFormData({ title: '', code: '', language: '' });
+        setFormData({ title: '', text: '' });
       } else {
         await response.json();
-        setErrorMessage('Failed to create snippet');
+        setErrorMessage('Failed to summarize text');
       }
     } catch (error) {
-      setErrorMessage('Failed to create snippet');
+      setErrorMessage('Failed to summarize text');
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleInputChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >,
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -94,7 +90,7 @@ export default function CreatePage() {
     <Layout>
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-900 mb-8">
-          Create New Snippet
+          Create New Summary
         </h1>
 
         <div className="bg-white rounded-lg shadow p-8">
@@ -138,62 +134,22 @@ export default function CreatePage() {
 
               <div>
                 <label
-                  htmlFor="code"
+                  htmlFor="text"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  Code
+                  Text to Summarize
                 </label>
                 <textarea
-                  id="code"
-                  name="code"
-                  value={formData.code}
+                  id="text"
+                  name="text"
+                  value={formData.text}
                   onChange={handleInputChange}
                   rows={10}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm font-mono"
-                  placeholder="Paste your code here..."
-                />
-                {errors.code && (
-                  <p className="mt-1 text-sm text-red-600">{errors.code}</p>
-                )}
-              </div>
-
-              <div>
-                <label
-                  htmlFor="language"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Language
-                </label>
-                <select
-                  id="language"
-                  name="language"
-                  value={formData.language}
-                  onChange={handleInputChange}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                >
-                  <option value="">Select a language</option>
-                  <option value="javascript">JavaScript</option>
-                  <option value="typescript">TypeScript</option>
-                  <option value="python">Python</option>
-                  <option value="java">Java</option>
-                  <option value="cpp">C++</option>
-                  <option value="csharp">C#</option>
-                  <option value="go">Go</option>
-                  <option value="rust">Rust</option>
-                  <option value="php">PHP</option>
-                  <option value="ruby">Ruby</option>
-                  <option value="swift">Swift</option>
-                  <option value="kotlin">Kotlin</option>
-                  <option value="scala">Scala</option>
-                  <option value="html">HTML</option>
-                  <option value="css">CSS</option>
-                  <option value="sql">SQL</option>
-                  <option value="bash">Bash</option>
-                  <option value="powershell">PowerShell</option>
-                  <option value="other">Other</option>
-                </select>
-                {errors.language && (
-                  <p className="mt-1 text-sm text-red-600">{errors.language}</p>
+                  placeholder="Paste your text here to get an AI summary..."
+                />
+                {errors.text && (
+                  <p className="mt-1 text-sm text-red-600">{errors.text}</p>
                 )}
               </div>
 
@@ -203,7 +159,7 @@ export default function CreatePage() {
                   disabled={isLoading}
                   className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isLoading ? 'Creating...' : 'Create Snippet'}
+                  {isLoading ? 'Summarizing...' : 'Get Summary'}
                 </button>
               </div>
             </div>

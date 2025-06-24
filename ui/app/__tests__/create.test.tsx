@@ -6,7 +6,7 @@ import CreatePage from '../routes/create';
 // Mock fetch for API calls
 global.fetch = vi.fn();
 
-describe('Create Snippet Form', () => {
+describe('Create Summary Form', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -14,37 +14,29 @@ describe('Create Snippet Form', () => {
   const renderWithRouter = (ui: React.ReactNode) =>
     render(<MemoryRouter>{ui}</MemoryRouter>);
 
-  it('should render the create snippet form', () => {
+  it('should render the create summary form', () => {
     renderWithRouter(<CreatePage />);
-    expect(screen.getByText('Create New Snippet')).toBeTruthy();
+    expect(screen.getByText('Create New Summary')).toBeTruthy();
     expect(screen.getByLabelText(/title/i)).toBeTruthy();
-    expect(screen.getByLabelText(/code/i)).toBeTruthy();
-    expect(screen.getByLabelText(/language/i)).toBeTruthy();
-    expect(
-      screen.getByRole('button', { name: /create snippet/i }),
-    ).toBeTruthy();
+    expect(screen.getByLabelText(/text to summarize/i)).toBeTruthy();
+    expect(screen.getByRole('button', { name: /get summary/i })).toBeTruthy();
   });
 
   it('should have required form fields', () => {
     renderWithRouter(<CreatePage />);
     const titleInput = screen.getByLabelText(/title/i);
-    const codeInput = screen.getByLabelText(/code/i);
-    const languageSelect = screen.getByLabelText(/language/i);
+    const textInput = screen.getByLabelText(/text to summarize/i);
     expect(titleInput).toBeTruthy();
-    expect(codeInput).toBeTruthy();
-    expect(languageSelect).toBeTruthy();
+    expect(textInput).toBeTruthy();
   });
 
   it('should show validation errors for empty required fields', async () => {
     renderWithRouter(<CreatePage />);
-    const submitButton = screen.getByRole('button', {
-      name: /create snippet/i,
-    });
+    const submitButton = screen.getByRole('button', { name: /get summary/i });
     fireEvent.click(submitButton);
     await waitFor(() => {
       expect(screen.queryByText(/title is required/i)).toBeTruthy();
-      expect(screen.queryByText(/code is required/i)).toBeTruthy();
-      expect(screen.queryByText(/language is required/i)).toBeTruthy();
+      expect(screen.queryByText(/text is required/i)).toBeTruthy();
     });
   });
 
@@ -53,27 +45,22 @@ describe('Create Snippet Form', () => {
       ok: true,
       json: () => ({
         id: '123',
-        title: 'Test Snippet',
-        code: 'console.log("hello")',
-        language: 'javascript',
-        summary: 'A simple console log statement',
+        title: 'Test Summary',
+        code: 'This is some text to summarize',
+        language: 'text',
+        summary: 'A summary of the text',
         createdAt: new Date().toISOString(),
       }),
     });
     global.fetch = mockFetch;
     renderWithRouter(<CreatePage />);
     fireEvent.change(screen.getByLabelText(/title/i), {
-      target: { value: 'Test Snippet' },
+      target: { value: 'Test Summary' },
     });
-    fireEvent.change(screen.getByLabelText(/code/i), {
-      target: { value: 'console.log("hello")' },
+    fireEvent.change(screen.getByLabelText(/text to summarize/i), {
+      target: { value: 'This is some text to summarize' },
     });
-    fireEvent.change(screen.getByLabelText(/language/i), {
-      target: { value: 'javascript' },
-    });
-    const submitButton = screen.getByRole('button', {
-      name: /create snippet/i,
-    });
+    const submitButton = screen.getByRole('button', { name: /get summary/i });
     fireEvent.click(submitButton);
     await waitFor(() => {
       expect(mockFetch).toHaveBeenCalledWith(
@@ -92,19 +79,14 @@ describe('Create Snippet Form', () => {
     global.fetch = mockFetch;
     renderWithRouter(<CreatePage />);
     fireEvent.change(screen.getByLabelText(/title/i), {
-      target: { value: 'Test Snippet' },
+      target: { value: 'Test Summary' },
     });
-    fireEvent.change(screen.getByLabelText(/code/i), {
-      target: { value: 'console.log("hello")' },
+    fireEvent.change(screen.getByLabelText(/text to summarize/i), {
+      target: { value: 'This is some text to summarize' },
     });
-    fireEvent.change(screen.getByLabelText(/language/i), {
-      target: { value: 'javascript' },
-    });
-    const submitButton = screen.getByRole('button', {
-      name: /create snippet/i,
-    });
+    const submitButton = screen.getByRole('button', { name: /get summary/i });
     fireEvent.click(submitButton);
-    expect(screen.getByText(/creating/i)).toBeTruthy();
+    expect(screen.getByText(/summarizing/i)).toBeTruthy();
     expect((submitButton as HTMLButtonElement).disabled).toBe(true);
   });
 
@@ -113,30 +95,25 @@ describe('Create Snippet Form', () => {
       ok: true,
       json: () => ({
         id: '123',
-        title: 'Test Snippet',
-        code: 'console.log("hello")',
-        language: 'javascript',
-        summary: 'A simple console log statement',
+        title: 'Test Summary',
+        code: 'This is some text to summarize',
+        language: 'text',
+        summary: 'A summary of the text',
         createdAt: new Date().toISOString(),
       }),
     });
     global.fetch = mockFetch;
     renderWithRouter(<CreatePage />);
     fireEvent.change(screen.getByLabelText(/title/i), {
-      target: { value: 'Test Snippet' },
+      target: { value: 'Test Summary' },
     });
-    fireEvent.change(screen.getByLabelText(/code/i), {
-      target: { value: 'console.log("hello")' },
+    fireEvent.change(screen.getByLabelText(/text to summarize/i), {
+      target: { value: 'This is some text to summarize' },
     });
-    fireEvent.change(screen.getByLabelText(/language/i), {
-      target: { value: 'javascript' },
-    });
-    const submitButton = screen.getByRole('button', {
-      name: /create snippet/i,
-    });
+    const submitButton = screen.getByRole('button', { name: /get summary/i });
     fireEvent.click(submitButton);
     await waitFor(() => {
-      expect(screen.queryByText(/snippet created successfully/i)).toBeTruthy();
+      expect(screen.queryByText(/text summarized successfully/i)).toBeTruthy();
     });
   });
 
@@ -149,20 +126,15 @@ describe('Create Snippet Form', () => {
     global.fetch = mockFetch;
     renderWithRouter(<CreatePage />);
     fireEvent.change(screen.getByLabelText(/title/i), {
-      target: { value: 'Test Snippet' },
+      target: { value: 'Test Summary' },
     });
-    fireEvent.change(screen.getByLabelText(/code/i), {
-      target: { value: 'console.log("hello")' },
+    fireEvent.change(screen.getByLabelText(/text to summarize/i), {
+      target: { value: 'This is some text to summarize' },
     });
-    fireEvent.change(screen.getByLabelText(/language/i), {
-      target: { value: 'javascript' },
-    });
-    const submitButton = screen.getByRole('button', {
-      name: /create snippet/i,
-    });
+    const submitButton = screen.getByRole('button', { name: /get summary/i });
     fireEvent.click(submitButton);
     await waitFor(() => {
-      expect(screen.queryByText(/failed to create snippet/i)).toBeTruthy();
+      expect(screen.queryByText(/failed to summarize text/i)).toBeTruthy();
     });
   });
 
@@ -171,29 +143,28 @@ describe('Create Snippet Form', () => {
       ok: true,
       json: () => ({
         id: '123',
-        title: 'Test Snippet',
-        code: 'console.log("hello")',
-        language: 'javascript',
-        summary: 'A simple console log statement',
+        title: 'Test Summary',
+        code: 'This is some text to summarize',
+        language: 'text',
+        summary: 'A summary of the text',
         createdAt: new Date().toISOString(),
       }),
     });
     global.fetch = mockFetch;
     renderWithRouter(<CreatePage />);
     const titleInput = screen.getByLabelText(/title/i);
-    const codeInput = screen.getByLabelText(/code/i);
-    const languageSelect = screen.getByLabelText(/language/i);
-    fireEvent.change(titleInput, { target: { value: 'Test Snippet' } });
-    fireEvent.change(codeInput, { target: { value: 'console.log("hello")' } });
-    fireEvent.change(languageSelect, { target: { value: 'javascript' } });
+    const textInput = screen.getByLabelText(/text to summarize/i);
+    fireEvent.change(titleInput, { target: { value: 'Test Summary' } });
+    fireEvent.change(textInput, {
+      target: { value: 'This is some text to summarize' },
+    });
     const submitButton = screen.getByRole('button', {
-      name: /create snippet/i,
+      name: /get summary/i,
     });
     fireEvent.click(submitButton);
     await waitFor(() => {
-      expect((titleInput as HTMLInputElement).value).toBe('');
-      expect((codeInput as HTMLInputElement).value).toBe('');
-      expect((languageSelect as HTMLSelectElement).value).toBe('');
+      expect(titleInput.value).toBe('');
+      expect(textInput.value).toBe('');
     });
   });
 });
