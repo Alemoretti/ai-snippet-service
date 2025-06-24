@@ -23,17 +23,22 @@ interface ErrorResponse {
   error: string;
 }
 
-let mongoServer: MongoMemoryServer;
+let mongoServer: MongoMemoryServer | null = null;
 
 beforeAll(async () => {
-  // Start MongoDB Memory Server
-  mongoServer = await MongoMemoryServer.create();
-  const uri = mongoServer.getUri();
+  try {
+    // Start MongoDB Memory Server
+    mongoServer = await MongoMemoryServer.create();
+    const uri = mongoServer.getUri();
 
-  await mongoose.connect(uri);
-  // Mock getSummary to avoid hitting OpenAI API
-  // (It was returning too many requests because of free account*)
-  vi.spyOn(summarize, 'getSummary').mockResolvedValue('mocked summary');
+    await mongoose.connect(uri);
+    // Mock getSummary to avoid hitting OpenAI API
+    // (It was returning too many requests because of free account*)
+    vi.spyOn(summarize, 'getSummary').mockResolvedValue('mocked summary');
+  } catch (error) {
+    console.error('Failed to start MongoDB Memory Server:', error);
+    throw error;
+  }
 });
 
 afterEach(async () => {
@@ -48,7 +53,9 @@ afterEach(async () => {
 
 afterAll(async () => {
   await mongoose.disconnect();
-  await mongoServer.stop();
+  if (mongoServer) {
+    await mongoServer.stop();
+  }
 });
 
 describe('POST /snippets', () => {
