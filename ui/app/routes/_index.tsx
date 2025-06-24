@@ -1,55 +1,63 @@
 import type { MetaFunction } from '@remix-run/node';
+import { Layout } from '~/components/Layout';
 
 export const meta: MetaFunction = () => {
   return [
-    { title: 'New Remix App' },
-    { name: 'description', content: 'Welcome to Remix!' },
+    { title: 'AI Snippet Service' },
+    {
+      name: 'description',
+      content:
+        'Get summaries of your code snippets with AI',
+    },
   ];
 };
 
 export default function Index() {
   return (
-    <div className="flex h-screen items-center justify-center">
-      <div className="flex flex-col items-center gap-16">
-        <header className="flex flex-col items-center gap-9">
-          <h1 className="leading text-2xl font-bold text-gray-800 dark:text-gray-100">
-            Welcome to <span className="sr-only">Remix</span>
+    <Layout>
+      <div className="max-w-4xl mx-auto">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            AI Snippet Service
           </h1>
-          <div className="h-[144px] w-[434px]">
-            <img
-              src="/logo-light.png"
-              alt="Remix"
-              className="block w-full dark:hidden"
-            />
-            <img
-              src="/logo-dark.png"
-              alt="Remix"
-              className="hidden w-full dark:block"
-            />
-          </div>
-        </header>
-        <nav className="flex flex-col items-center justify-center gap-4 rounded-3xl border border-gray-200 p-6 dark:border-gray-700">
-          <p className="leading-6 text-gray-700 dark:text-gray-200">
-            What&apos;s next?
+          <p className="text-xl text-gray-600 mb-8">
+            Get summaries of your code snippets with AI
           </p>
-          <ul>
-            {resources.map(({ href, text, icon }) => (
-              <li key={href}>
-                <a
-                  className="group flex items-center gap-3 self-stretch p-3 leading-normal text-blue-700 hover:underline dark:text-blue-500"
-                  href={href}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  {icon}
-                  {text}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-8">
+          <div className="bg-white rounded-lg shadow p-8">
+            <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+              Browse Snippets
+            </h2>
+            <p className="text-gray-600 mb-6">
+              Browse your snippets with the summaries..
+            </p>
+            <a
+              href="/snippets"
+              className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              View Snippets
+            </a>
+          </div>
+
+          <div className="bg-white rounded-lg shadow p-8">
+            <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+              Create New Snippet
+            </h2>
+            <p className="text-gray-600 mb-6">
+              Add a new snippet and get a summary .
+            </p>
+            <a
+              href="/create"
+              className="inline-block bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors"
+            >
+              Create Snippet
+            </a>
+          </div>
+        </div>
       </div>
-    </div>
+    </Layout>
   );
 }
 
