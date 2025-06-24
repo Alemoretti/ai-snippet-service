@@ -54,8 +54,7 @@ export default function CreatePage() {
         },
         body: JSON.stringify({
           title: formData.title,
-          code: formData.text, // Keep 'code' field for API compatibility
-          language: 'text', // Default language for plain text
+          text: formData.text,
         }),
       });
 
